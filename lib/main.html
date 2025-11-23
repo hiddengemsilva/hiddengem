@@ -1,0 +1,1951 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Silva MD Mini Bot - Matrix Control Panel</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Rajdhani:wght@300;400;500;600&display=swap');
+    
+    :root {
+      --matrix-green: #00ff41;
+      --matrix-dark: #0a0f1f;
+      --matrix-darker: #050811;
+      --neon-blue: #00f3ff;
+      --hacker-red: #ff2a6d;
+      --cyber-yellow: #ffde00;
+      --glass: rgba(0, 255, 65, 0.05);
+      --glass-border: rgba(0, 255, 65, 0.2);
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      background: linear-gradient(135deg, var(--matrix-darker) 0%, var(--matrix-dark) 100%);
+      font-family: 'Rajdhani', sans-serif;
+      color: var(--matrix-green);
+      overflow-x: hidden;
+      position: relative;
+      padding: 10px;
+    }
+    
+    /* Matrix Digital Rain Background */
+    #matrixCanvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -3;
+    }
+    
+    /* Tech Grid Background */
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: 
+        radial-gradient(circle at 20% 30%, rgba(0, 255, 65, 0.05) 0%, transparent 50%),
+        radial-gradient(circle at 80% 70%, rgba(0, 243, 255, 0.04) 0%, transparent 50%);
+      z-index: -2;
+    }
+    
+    /* Tech Grid Pattern */
+    .grid {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: 
+        linear-gradient(rgba(0, 255, 65, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 255, 65, 0.03) 1px, transparent 1px);
+      background-size: 40px 40px;
+      perspective: 1000px;
+      transform-style: preserve-3d;
+      z-index: -1;
+    }
+    
+    /* Matrix Circuit Pattern */
+    .circuit {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: 
+        radial-gradient(circle at 30% 40%, rgba(0, 255, 65, 0.05) 0%, transparent 10%),
+        radial-gradient(circle at 70% 60%, rgba(0, 243, 255, 0.05) 0%, transparent 10%);
+      z-index: -1;
+    }
+    
+    .container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+      max-width: 500px;
+      padding: 10px;
+    }
+    
+    .main {
+      position: relative;
+      width: 100%;
+    }
+    
+    .box {
+      width: 100%;
+      padding: 25px 20px;
+      position: relative;
+      text-align: center;
+      background: rgba(0, 0, 0, 0.7);
+      border-radius: 5px;
+      backdrop-filter: blur(15px);
+      -webkit-backdrop-filter: blur(15px);
+      border: 1px solid var(--glass-border);
+      box-shadow: 
+        0 15px 35px rgba(0, 0, 0, 0.4),
+        inset 0 1px 0 rgba(0, 255, 65, 0.1),
+        0 0 0 1px rgba(0, 255, 65, 0.05);
+      transform: perspective(1000px) rotateY(0deg);
+      overflow: hidden;
+      transition: transform 0.5s ease, box-shadow 0.5s ease;
+      z-index: 1;
+    }
+    
+    /* Holographic Shimmer Effect */
+    .holographic-shimmer {
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(0, 255, 65, 0.1),
+        rgba(0, 243, 255, 0.15),
+        rgba(0, 255, 65, 0.1),
+        transparent
+      );
+      transform: skewX(-25deg);
+      animation: shimmer 6s infinite;
+      z-index: 2;
+    }
+    
+    @keyframes shimmer {
+      0% { left: -100%; }
+      100% { left: 100%; }
+    }
+    
+    .box::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: linear-gradient(45deg, transparent, rgba(0, 255, 65, 0.1), rgba(0, 243, 255, 0.1), transparent);
+      transform: rotate(45deg);
+      animation: shine 8s infinite;
+      z-index: -1;
+    }
+    
+    @keyframes shine {
+      0% { transform: translateX(-100%) rotate(45deg); }
+      100% { transform: translateX(100%) rotate(45deg); }
+    }
+    
+    .box:hover {
+      transform: perspective(1000px) rotateY(5deg);
+      box-shadow: 
+        0 20px 40px rgba(0, 0, 0, 0.5),
+        inset 0 1px 0 rgba(0, 255, 65, 0.1),
+        0 0 20px rgba(0, 255, 65, 0.3);
+    }
+    
+    .logo {
+      margin-bottom: 20px;
+      display: flex;
+      justify-content: center;
+    }
+    
+    .logo-text {
+      font-family: 'Orbitron', sans-serif;
+      font-size: clamp(28px, 8vw, 36px);
+      font-weight: 700;
+      color: var(--matrix-green);
+      text-shadow: 0 0 15px rgba(0, 255, 65, 0.5);
+      letter-spacing: 2px;
+      position: relative;
+    }
+    
+    .logo-text::after {
+      content: '';
+      position: absolute;
+      bottom: -5px;
+      left: 10%;
+      width: 80%;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--matrix-green), var(--neon-blue), transparent);
+    }
+    
+    .centered-text {
+      text-align: center;
+      margin-bottom: 15px;
+    }
+    
+    h3 {
+      font-family: 'Orbitron', sans-serif;
+      font-size: clamp(16px, 5vw, 20px);
+      font-weight: 500;
+      color: var(--matrix-green);
+      text-shadow: 0 0 8px rgba(0, 255, 65, 0.7);
+      margin-bottom: 8px;
+      letter-spacing: 1px;
+    }
+    
+    h6 {
+      font-size: clamp(14px, 4vw, 16px);
+      font-weight: 400;
+      color: rgba(0, 255, 65, 0.8);
+      margin-bottom: 20px;
+    }
+    
+    .input-container {
+      display: flex;
+      background: rgba(0, 0, 0, 0.5);
+      border-radius: 5px;
+      padding: 5px;
+      gap: 5px;
+      width: 100%;
+      margin-bottom: 20px;
+      border: 1px solid var(--glass-border);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .input-container::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(0, 255, 65, 0.1),
+        transparent
+      );
+      transform: skewX(-15deg);
+      transition: left 0.6s;
+    }
+    
+    .input-container:focus-within::before {
+      left: 100%;
+    }
+    
+    .input-container input {
+      border-radius: 5px 0 0 5px;
+      background: rgba(0, 0, 0, 0.6);
+      width: 100%;
+      flex-basis: 75%;
+      padding: 14px 12px;
+      border: none;
+      border-right: 1px solid rgba(0, 255, 65, 0.3);
+      color: var(--matrix-green);
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 16px;
+      font-weight: 500;
+      transition: all 0.3s ease;
+    }
+    
+    .input-container input:focus {
+      outline: none;
+      background: rgba(0, 0, 0, 0.7);
+      box-shadow: 0 0 15px rgba(0, 255, 65, 0.3);
+    }
+    
+    .input-container input::placeholder {
+      color: rgba(0, 255, 65, 0.4);
+      font-size: 14px;
+    }
+    
+    .input-container button {
+      flex-basis: 25%;
+      padding: 14px 8px;
+      background: rgba(0, 0, 0, 0.8);
+      font-family: 'Orbitron', sans-serif;
+      font-weight: 600;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--matrix-green);
+      border: 1px solid var(--glass-border);
+      border-radius: 0 5px 5px 0;
+      transition: all 0.3s ease;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      font-size: 12px;
+    }
+    
+    .input-container button::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(0, 255, 65, 0.2), transparent);
+      transition: 0.5s;
+    }
+    
+    .input-container button:hover::before {
+      left: 100%;
+    }
+    
+    .input-container button:hover {
+      background: rgba(0, 0, 0, 0.9);
+      box-shadow: 0 0 20px rgba(0, 255, 65, 0.5);
+      color: #000;
+      background: var(--matrix-green);
+    }
+    
+    #waiting-message {
+      display: none;
+      color: var(--matrix-green);
+      font-family: 'Orbitron', sans-serif;
+      margin: 15px 0;
+      text-shadow: 0 0 8px rgba(0, 255, 65, 0.7);
+      font-size: 16px;
+    }
+    
+    #pair {
+      min-height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 10px;
+    }
+    
+    .code-display {
+      font-family: 'Orbitron', sans-serif;
+      font-size: clamp(18px, 5vw, 24px);
+      background: rgba(0, 0, 0, 0.5);
+      padding: 12px 20px;
+      border-radius: 5px;
+      border: 1px solid var(--glass-border);
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      position: relative;
+      overflow: hidden;
+      width: 100%;
+      justify-content: center;
+    }
+    
+    .code-display::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(0, 255, 65, 0.1),
+        transparent
+      );
+      transform: skewX(-15deg);
+      transition: left 0.5s;
+    }
+    
+    .code-display:hover::before {
+      left: 100%;
+    }
+    
+    .code-display:hover {
+      background: rgba(0, 0, 0, 0.6);
+      box-shadow: 0 0 20px rgba(0, 255, 65, 0.3);
+      transform: translateY(-3px);
+    }
+    
+    .code-text {
+      color: var(--matrix-green);
+      font-weight: 500;
+    }
+    
+    .code-value {
+      color: var(--matrix-green);
+      font-weight: 700;
+      text-shadow: 0 0 8px rgba(0, 255, 65, 0.7);
+    }
+    
+    .pulse {
+      animation: pulse 2s infinite;
+    }
+    
+    @keyframes pulse {
+      0% { box-shadow: 0 0 0 0 rgba(0, 255, 65, 0.4); }
+      70% { box-shadow: 0 0 0 12px rgba(0, 255, 65, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(0, 255, 65, 0); }
+    }
+    
+    /* Data Stream Effect */
+    .data-stream {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      z-index: -1;
+      opacity: 0.3;
+    }
+    
+    .stream {
+      position: absolute;
+      width: 2px;
+      height: 100%;
+      background: linear-gradient(to bottom, transparent, var(--matrix-green), transparent);
+      animation: streamFlow 15s linear infinite;
+    }
+    
+    @keyframes streamFlow {
+      0% { transform: translateY(-100%); }
+      100% { transform: translateY(100%); }
+    }
+    
+    /* Status Indicators */
+    .status-indicators {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 20px;
+      gap: 8px;
+    }
+    
+    .status-indicator {
+      flex: 1;
+      padding: 10px;
+      background: rgba(0, 0, 0, 0.5);
+      border-radius: 5px;
+      border: 1px solid var(--glass-border);
+      text-align: center;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 10px;
+      letter-spacing: 0.5px;
+    }
+    
+    .status-active {
+      color: var(--matrix-green);
+      text-shadow: 0 0 5px rgba(0, 255, 65, 0.7);
+    }
+    
+    .status-inactive {
+      color: rgba(0, 255, 65, 0.4);
+    }
+    
+    /* Tech Glow Effect */
+    .tech-glow {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 300px;
+      height: 300px;
+      background: radial-gradient(circle, rgba(0, 255, 65, 0.2) 0%, transparent 70%);
+      filter: blur(40px);
+      z-index: -1;
+      animation: glowPulse 4s infinite alternate;
+    }
+    
+    @keyframes glowPulse {
+      0% { opacity: 0.3; }
+      100% { opacity: 0.7; }
+    }
+    
+    /* Auth Tabs */
+    .auth-tabs {
+      display: flex;
+      margin-bottom: 20px;
+      background: rgba(0, 0, 0, 0.5);
+      border-radius: 5px;
+      padding: 5px;
+      gap: 5px;
+    }
+    
+    .auth-tab {
+      flex: 1;
+      padding: 10px;
+      text-align: center;
+      font-family: 'Orbitron', sans-serif;
+      font-weight: 600;
+      letter-spacing: 1px;
+      color: rgba(0, 255, 65, 0.7);
+      cursor: pointer;
+      border-radius: 5px;
+      transition: all 0.3s ease;
+      font-size: 12px;
+    }
+    
+    .auth-tab.active {
+      background: rgba(0, 0, 0, 0.8);
+      color: var(--matrix-green);
+      box-shadow: 0 0 15px rgba(0, 255, 65, 0.3);
+      border: 1px solid var(--glass-border);
+    }
+    
+    /* User Info */
+    .user-info {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+      padding: 12px;
+      background: rgba(0, 0, 0, 0.5);
+      border-radius: 5px;
+      border: 1px solid var(--glass-border);
+    }
+    
+    .user-details {
+      text-align: left;
+    }
+    
+    .user-name {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 16px;
+      color: var(--matrix-green);
+      margin-bottom: 3px;
+    }
+    
+    .logout-btn {
+      padding: 6px 12px;
+      background: rgba(255, 42, 109, 0.2);
+      color: var(--hacker-red);
+      border: 1px solid rgba(255, 42, 109, 0.3);
+      border-radius: 5px;
+      cursor: pointer;
+      font-family: 'Rajdhani', sans-serif;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      font-size: 12px;
+    }
+    
+    .logout-btn:hover {
+      background: rgba(255, 42, 109, 0.3);
+      box-shadow: 0 0 10px rgba(255, 42, 109, 0.3);
+    }
+    
+    /* Configuration Section */
+    .config-section {
+      margin-top: 15px;
+      padding: 12px;
+      background: rgba(0, 0, 0, 0.5);
+      border-radius: 5px;
+      border: 1px solid var(--glass-border);
+    }
+    
+    .config-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+      cursor: pointer;
+    }
+    
+    .config-title {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 14px;
+      color: var(--matrix-green);
+      text-shadow: 0 0 5px rgba(0, 255, 65, 0.5);
+    }
+    
+    .config-toggle {
+      background: none;
+      border: none;
+      color: var(--matrix-green);
+      cursor: pointer;
+      font-size: 16px;
+      transition: transform 0.3s ease;
+    }
+    
+    .config-list {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.5s ease;
+    }
+    
+    .config-list.expanded {
+      max-height: 500px;
+      overflow-y: auto;
+    }
+    
+    .config-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px;
+      margin-bottom: 8px;
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 5px;
+      border: 1px solid var(--glass-border);
+      font-size: 12px;
+    }
+    
+    .config-label {
+      flex: 1;
+      text-align: left;
+      color: rgba(0, 255, 65, 0.9);
+      font-weight: 500;
+    }
+    
+    .config-control {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .toggle-switch {
+      position: relative;
+      display: inline-block;
+      width: 40px;
+      height: 20px;
+    }
+    
+    .toggle-switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+    
+    .toggle-slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: rgba(0, 255, 65, 0.2);
+      transition: .4s;
+      border-radius: 20px;
+    }
+    
+    .toggle-slider:before {
+      position: absolute;
+      content: "";
+      height: 16px;
+      width: 16px;
+      left: 2px;
+      bottom: 2px;
+      background-color: var(--matrix-green);
+      transition: .4s;
+      border-radius: 50%;
+    }
+    
+    input:checked + .toggle-slider {
+      background-color: var(--matrix-green);
+    }
+    
+    input:checked + .toggle-slider:before {
+      transform: translateX(20px);
+      background-color: #000;
+    }
+    
+    .config-input {
+      background: rgba(0, 0, 0, 0.6);
+      border: 1px solid var(--glass-border);
+      border-radius: 5px;
+      padding: 6px 8px;
+      color: var(--matrix-green);
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 12px;
+      width: 120px;
+    }
+    
+    .config-input:focus {
+      outline: none;
+      border-color: var(--matrix-green);
+      box-shadow: 0 0 8px rgba(0, 255, 65, 0.3);
+    }
+    
+    .config-btn {
+      width: 100%;
+      padding: 12px;
+      background: rgba(0, 0, 0, 0.8);
+      font-family: 'Orbitron', sans-serif;
+      font-weight: 600;
+      letter-spacing: 1px;
+      color: var(--matrix-green);
+      border: 1px solid var(--glass-border);
+      border-radius: 5px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 14px;
+      margin-top: 10px;
+    }
+    
+    .config-btn:hover {
+      background: var(--matrix-green);
+      color: #000;
+      box-shadow: 0 0 20px rgba(0, 255, 65, 0.5);
+    }
+    
+    /* Bot Sessions Section */
+    .sessions-section {
+      margin-top: 15px;
+      padding: 12px;
+      background: rgba(0, 0, 0, 0.5);
+      border-radius: 5px;
+      border: 1px solid var(--glass-border);
+    }
+    
+    .sessions-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+    
+    .sessions-title {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 14px;
+      color: var(--matrix-green);
+      text-shadow: 0 0 5px rgba(0, 255, 65, 0.5);
+    }
+    
+    .sessions-list {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.5s ease;
+    }
+    
+    .sessions-list.expanded {
+      max-height: 300px;
+      overflow-y: auto;
+    }
+    
+    .session-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px;
+      margin-bottom: 8px;
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 5px;
+      border: 1px solid var(--glass-border);
+      font-size: 12px;
+    }
+    
+    .session-details {
+      flex: 1;
+      text-align: left;
+    }
+    
+    .session-number {
+      font-weight: 600;
+      margin-bottom: 4px;
+      font-family: 'Orbitron', sans-serif;
+      letter-spacing: 0.5px;
+    }
+    
+    .session-status {
+      color: rgba(0, 255, 65, 0.7);
+      font-size: 11px;
+      margin-bottom: 2px;
+    }
+    
+    .session-active {
+      color: var(--matrix-green);
+    }
+    
+    .session-inactive {
+      color: rgba(0, 255, 65, 0.5);
+    }
+    
+    .session-actions {
+      display: flex;
+      gap: 5px;
+    }
+    
+    .session-btn {
+      padding: 4px 8px;
+      background: rgba(0, 255, 65, 0.2);
+      color: var(--matrix-green);
+      border: 1px solid rgba(0, 255, 65, 0.3);
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 10px;
+      transition: all 0.3s ease;
+    }
+    
+    .session-btn:hover {
+      background: rgba(0, 255, 65, 0.3);
+      box-shadow: 0 0 8px rgba(0, 255, 65, 0.3);
+    }
+    
+    .session-btn.disconnect {
+      background: rgba(255, 42, 109, 0.2);
+      color: var(--hacker-red);
+      border: 1px solid rgba(255, 42, 109, 0.3);
+    }
+    
+    .session-btn.disconnect:hover {
+      background: rgba(255, 42, 109, 0.3);
+      box-shadow: 0 0 8px rgba(255, 42, 109, 0.3);
+    }
+    
+    .no-sessions {
+      text-align: center;
+      color: rgba(0, 255, 65, 0.5);
+      font-style: italic;
+      padding: 15px;
+      font-size: 12px;
+    }
+    
+    /* Error/Success Messages */
+    .message {
+      padding: 10px;
+      border-radius: 5px;
+      margin-bottom: 12px;
+      font-weight: 500;
+      text-align: center;
+      font-size: 14px;
+    }
+    
+    .error-message {
+      background: rgba(255, 42, 109, 0.1);
+      border: 1px solid rgba(255, 42, 109, 0.3);
+      color: var(--hacker-red);
+    }
+    
+    .success-message {
+      background: rgba(0, 255, 65, 0.1);
+      border: 1px solid rgba(0, 255, 65, 0.3);
+      color: var(--matrix-green);
+    }
+    
+    /* Loader */
+    .loader {
+      display: none;
+      border: 3px solid rgba(0, 255, 65, 0.3);
+      border-top: 3px solid var(--matrix-green);
+      border-radius: 50%;
+      width: 25px;
+      height: 25px;
+      animation: spin 1s linear infinite;
+      margin: 12px auto;
+    }
+    
+    .loader.active {
+      display: block;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    /* Form Elements */
+    select {
+      background: rgba(0, 0, 0, 0.6);
+      color: var(--matrix-green);
+      border: 1px solid var(--glass-border);
+      padding: 14px 12px;
+      width: 100%;
+      border-radius: 5px;
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 16px;
+    }
+    
+    select option {
+      background: var(--matrix-dark);
+      color: var(--matrix-green);
+    }
+    
+    /* Scrollbar Styling */
+    .config-list::-webkit-scrollbar,
+    .sessions-list::-webkit-scrollbar {
+      width: 6px;
+    }
+    
+    .config-list::-webkit-scrollbar-track,
+    .sessions-list::-webkit-scrollbar-track {
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: 3px;
+    }
+    
+    .config-list::-webkit-scrollbar-thumb,
+    .sessions-list::-webkit-scrollbar-thumb {
+      background: var(--matrix-green);
+      border-radius: 3px;
+    }
+    
+    .config-list::-webkit-scrollbar-thumb:hover,
+    .sessions-list::-webkit-scrollbar-thumb:hover {
+      background: var(--neon-blue);
+    }
+
+    /* Futuristic particle effects */
+    .particles {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      z-index: -1;
+    }
+    
+    .particle {
+      position: absolute;
+      background: rgba(0, 255, 65, 0.3);
+      border-radius: 50%;
+      animation: float 15s infinite linear;
+    }
+    
+    @keyframes float {
+      0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+      10% { opacity: 1; }
+      90% { opacity: 1; }
+      100% { transform: translateY(-100px) rotate(360deg); opacity: 0; }
+    }
+    
+    /* Media Queries for Responsiveness */
+    @media (max-width: 380px) {
+      .box {
+        padding: 20px 15px;
+      }
+      
+      .input-container {
+        flex-direction: column;
+      }
+      
+      .input-container input {
+        border-radius: 5px;
+        border-right: none;
+        border-bottom: 1px solid rgba(0, 255, 65, 0.3);
+        margin-bottom: 5px;
+      }
+      
+      .input-container button {
+        padding: 12px;
+        border-radius: 5px;
+        font-size: 11px;
+      }
+      
+      .logo-text {
+        font-size: 24px;
+      }
+      
+      .status-indicators {
+        flex-direction: column;
+      }
+      
+      .user-info {
+        flex-direction: column;
+        gap: 10px;
+        text-align: center;
+      }
+      
+      .user-details {
+        text-align: center;
+      }
+      
+      .code-display {
+        padding: 10px 15px;
+        font-size: 16px;
+      }
+      
+      .config-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+      }
+      
+      .session-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+      }
+      
+      .session-actions {
+        align-self: flex-end;
+      }
+    }
+    
+    @media (max-width: 320px) {
+      .box {
+        padding: 15px 10px;
+      }
+      
+      .logo-text {
+        font-size: 22px;
+      }
+      
+      h3 {
+        font-size: 14px;
+      }
+      
+      h6 {
+        font-size: 12px;
+      }
+      
+      .input-container input {
+        padding: 12px 10px;
+        font-size: 14px;
+      }
+      
+      .input-container button {
+        padding: 10px;
+        font-size: 10px;
+      }
+      
+      .config-list.expanded {
+        max-height: 400px;
+      }
+      
+      .sessions-list.expanded {
+        max-height: 250px;
+      }
+    }
+    
+    @media (min-width: 768px) {
+      .container {
+        max-width: 550px;
+      }
+      
+      .box {
+        padding: 30px 25px;
+      }
+      
+      .config-list.expanded {
+        max-height: 600px;
+      }
+      
+      .sessions-list.expanded {
+        max-height: 350px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Matrix Rain Background -->
+  <canvas id="matrixCanvas"></canvas>
+  
+  <div class="grid"></div>
+  <div class="circuit"></div>
+  <div class="data-stream" id="data-stream"></div>
+  <div class="particles" id="particles"></div>
+  <div class="tech-glow"></div>
+  
+  <div class="container">
+    <div class="main">
+      <div class="box" id="box">
+        <!-- Holographic shimmer effect -->
+        <div class="holographic-shimmer"></div>
+        
+        <div class="logo">
+          <div class="logo-text">SILVA MD</div>
+        </div>
+        
+        <!-- Authentication View -->
+        <div id="auth-view">
+          <div class="auth-tabs">
+            <div class="auth-tab active" id="login-tab">LOGIN</div>
+            <div class="auth-tab" id="signup-tab">SIGN UP</div>
+          </div>
+          
+          <div id="login-form">
+            <h3 class="centered-text">🤖 SILVA MD MINI BOT 🤖</h3>
+            <h6>ACCESS YOUR CONTROL PANEL</h6>
+            
+            <div id="auth-message"></div>
+            
+            <div class="input-container">
+              <input placeholder="Username" type="text" id="login-username" name="username">
+            </div>
+            
+            <div class="input-container">
+              <input placeholder="Password" type="password" id="login-password" name="password">
+            </div>
+            
+            <div class="input-container">
+              <button id="login-btn">LOGIN</button>
+            </div>
+          </div>
+          
+          <div id="signup-form" style="display: none;">
+            <h3 class="centered-text">🤖 SILVA MD MINI BOT 🤖</h3>
+            <h6>CREATE NEW ACCOUNT</h6>
+            
+            <div id="signup-message"></div>
+            
+            <div class="input-container">
+              <input placeholder="Username" type="text" id="signup-username" name="username">
+            </div>
+            
+            <div class="input-container">
+              <input placeholder="Password" type="password" id="signup-password" name="password">
+            </div>
+            
+            <div class="input-container">
+              <input placeholder="Confirm Password" type="password" id="signup-confirm-password" name="confirm-password">
+            </div>
+            
+            <div class="input-container">
+              <button id="signup-btn">SIGN UP</button>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Main Bot View (hidden initially) -->
+        <div id="bot-view" style="display: none;">
+          <div class="user-info">
+            <div class="user-details">
+              <div class="user-name" id="display-username">USERNAME</div>
+              <div class="user-status">👑 SILVA MINI BOT CONTROL PANEL</div>
+            </div>
+            <button class="logout-btn" id="logout-btn">LOGOUT</button>
+          </div>
+          
+          <!-- Pairing Section -->
+          <div id="text">
+            <h3 class="centered-text">🤖 SILVA MD MINI BOT 🤖</h3>
+            <h6>✨ ENTER YOUR WHATSAPP NUMBER ✨</h6>
+            <div class="input-container">
+              <input placeholder="+1234567890" type="tel" id="number" name="number">
+              <button id="submit">CONNECT</button>
+            </div>
+           
+            <div id="waiting-message" class="centered-text" style="display: none;">PROCESSING...</div>
+            <main id="pair"></main>
+          </div>
+          
+          <!-- Bot Configuration Section -->
+          <div class="config-section">
+            <div class="config-header" id="config-header">
+              <div class="config-title">⚙️ BOT CONFIGURATION</div>
+              <button class="config-toggle" id="config-toggle">
+                <i class="fas fa-chevron-down"></i>
+              </button>
+            </div>
+            <div class="config-list" id="config-list">
+              <div class="config-item">
+                <div class="config-label">Language (LANG)</div>
+                <div class="config-control">
+                  <select class="config-input" id="config-lang">
+                    <option value="en">English</option>
+                    <option value="es">Spanish</option>
+                    <option value="fr">French</option>
+                    <option value="pt">Portuguese</option>
+                  </select>
+                </div>
+              </div>
+              
+              <div class="config-item">
+                <div class="config-label">Welcome Messages (WELCOME)</div>
+                <div class="config-control">
+                  <label class="toggle-switch">
+                    <input type="checkbox" id="config-welcome" checked>
+                    <span class="toggle-slider"></span>
+                  </label>
+                </div>
+              </div>
+              
+              <div class="config-item">
+                <div class="config-label">Auto View Status (AUTO_VIEW_STATUS)</div>
+                <div class="config-control">
+                  <label class="toggle-switch">
+                    <input type="checkbox" id="config-auto-view-status" checked>
+                    <span class="toggle-slider"></span>
+                  </label>
+                </div>
+              </div>
+              
+              <div class="config-item">
+                <div class="config-label">Auto Voice (AUTO_VOICE)</div>
+                <div class="config-control">
+                  <label class="toggle-switch">
+                    <input type="checkbox" id="config-auto-voice" checked>
+                    <span class="toggle-slider"></span>
+                  </label>
+                </div>
+              </div>
+              
+              <div class="config-item">
+                <div class="config-label">Auto Like Status (AUTO_LIKE_STATUS)</div>
+                <div class="config-control">
+                  <label class="toggle-switch">
+                    <input type="checkbox" id="config-auto-like-status" checked>
+                    <span class="toggle-slider"></span>
+                  </label>
+                </div>
+              </div>
+              
+              <div class="config-item">
+                <div class="config-label">Auto Recording (AUTO_RECORDING)</div>
+                <div class="config-control">
+                  <label class="toggle-switch">
+                    <input type="checkbox" id="config-auto-recording" checked>
+                    <span class="toggle-slider"></span>
+                  </label>
+                </div>
+              </div>
+              
+              <div class="config-item">
+                <div class="config-label">Auto Like Emojis (AUTO_LIKE_EMOJI)</div>
+                <div class="config-control">
+                  <input type="text" class="config-input" id="config-auto-like-emoji" value="💥,👍,😍,💗,🎈,🎉,🥳,😎,🚀,🔥">
+                </div>
+              </div>
+              
+              <div class="config-item">
+                <div class="config-label">Command Prefix (PREFIX)</div>
+                <div class="config-control">
+                  <input type="text" class="config-input" id="config-prefix" value="." maxlength="2">
+                </div>
+              </div>
+              
+              <button class="config-btn" id="save-config-btn">SAVE CONFIGURATION</button>
+            </div>
+          </div>
+          
+          <!-- Bot Sessions Section -->
+          <div class="sessions-section">
+            <div class="sessions-header" id="sessions-header">
+              <div class="sessions-title">📱 ACTIVE BOT SESSIONS</div>
+              <button class="config-toggle" id="sessions-toggle">
+                <i class="fas fa-chevron-down"></i>
+              </button>
+            </div>
+            <div class="sessions-list" id="sessions-list">
+              <div class="no-sessions">No active sessions. Connect your first bot above.</div>
+            </div>
+          </div>
+          
+          <!-- Status Indicators -->
+          <div class="status-indicators">
+            <div class="status-indicator status-active">
+              <i class="fas fa-circle" style="color: var(--matrix-green); margin-right: 5px;"></i>
+              SYSTEM ONLINE
+            </div>
+            <div class="status-indicator status-active">
+              <i class="fas fa-circle" style="color: var(--matrix-green); margin-right: 5px;"></i>
+              BOT READY
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Configuration
+    const API_BASE = 'https://silva-md-backend.onrender.com/api';
+    const CONFIG = {
+      APP_NAME: 'Silva MD Mini Bot',
+      PAIRING_ENDPOINT: '/code'  // Using your /code endpoint
+    };
+
+    // State management
+    let state = {
+      currentUser: null,
+      authToken: localStorage.getItem('silva_token'),
+      botConfig: {
+        LANG: 'en',
+        WELCOME: 'true',
+        AUTO_VIEW_STATUS: 'true',
+        AUTO_VOICE: 'true',
+        AUTO_LIKE_STATUS: 'true',
+        AUTO_RECORDING: 'true',
+        AUTO_LIKE_EMOJI: ['💥', '👍', '😍', '💗', '🎈', '🎉', '🥳', '😎', '🚀', '🔥'],
+        PREFIX: '.'
+      },
+      activeSessions: []
+    };
+
+    // DOM Elements
+    const elements = {
+      authView: document.getElementById("auth-view"),
+      botView: document.getElementById("bot-view"),
+      loginTab: document.getElementById("login-tab"),
+      signupTab: document.getElementById("signup-tab"),
+      loginForm: document.getElementById("login-form"),
+      signupForm: document.getElementById("signup-form"),
+      loginBtn: document.getElementById("login-btn"),
+      signupBtn: document.getElementById("signup-btn"),
+      logoutBtn: document.getElementById("logout-btn"),
+      displayUsername: document.getElementById("display-username"),
+      loginUsername: document.getElementById("login-username"),
+      loginPassword: document.getElementById("login-password"),
+      signupUsername: document.getElementById("signup-username"),
+      signupPassword: document.getElementById("signup-password"),
+      signupConfirmPassword: document.getElementById("signup-confirm-password"),
+      authMessage: document.getElementById("auth-message"),
+      signupMessage: document.getElementById("signup-message"),
+      configHeader: document.getElementById("config-header"),
+      configToggle: document.getElementById("config-toggle"),
+      configList: document.getElementById("config-list"),
+      sessionsHeader: document.getElementById("sessions-header"),
+      sessionsToggle: document.getElementById("sessions-toggle"),
+      sessionsList: document.getElementById("sessions-list"),
+      saveConfigBtn: document.getElementById("save-config-btn"),
+      
+      // Config form elements
+      configLang: document.getElementById("config-lang"),
+      configWelcome: document.getElementById("config-welcome"),
+      configAutoViewStatus: document.getElementById("config-auto-view-status"),
+      configAutoVoice: document.getElementById("config-auto-voice"),
+      configAutoLikeStatus: document.getElementById("config-auto-like-status"),
+      configAutoRecording: document.getElementById("config-auto-recording"),
+      configAutoLikeEmoji: document.getElementById("config-auto-like-emoji"),
+      configPrefix: document.getElementById("config-prefix")
+    };
+
+    // UI Utilities
+    const ui = {
+      showMessage(message, type, target) {
+        const messageEl = document.getElementById(target);
+        messageEl.innerHTML = `<div class="message ${type}-message">${message}</div>`;
+      },
+
+      clearMessages() {
+        elements.authMessage.innerHTML = '';
+        elements.signupMessage.innerHTML = '';
+      },
+
+      setLoading(button, isLoading) {
+        if (isLoading) {
+          button.disabled = true;
+          const originalText = button.innerHTML;
+          button.dataset.originalText = originalText;
+          button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> PROCESSING...';
+        } else {
+          button.disabled = false;
+          button.innerHTML = button.dataset.originalText || button.textContent;
+        }
+      },
+
+      // Load configuration to form
+      loadConfigToForm() {
+        elements.configLang.value = state.botConfig.LANG;
+        elements.configWelcome.checked = state.botConfig.WELCOME === 'true';
+        elements.configAutoViewStatus.checked = state.botConfig.AUTO_VIEW_STATUS === 'true';
+        elements.configAutoVoice.checked = state.botConfig.AUTO_VOICE === 'true';
+        elements.configAutoLikeStatus.checked = state.botConfig.AUTO_LIKE_STATUS === 'true';
+        elements.configAutoRecording.checked = state.botConfig.AUTO_RECORDING === 'true';
+        elements.configAutoLikeEmoji.value = state.botConfig.AUTO_LIKE_EMOJI.join(',');
+        elements.configPrefix.value = state.botConfig.PREFIX;
+      },
+
+      // Save configuration from form
+      saveConfigFromForm() {
+        state.botConfig.LANG = elements.configLang.value;
+        state.botConfig.WELCOME = elements.configWelcome.checked ? 'true' : 'false';
+        state.botConfig.AUTO_VIEW_STATUS = elements.configAutoViewStatus.checked ? 'true' : 'false';
+        state.botConfig.AUTO_VOICE = elements.configAutoVoice.checked ? 'true' : 'false';
+        state.botConfig.AUTO_LIKE_STATUS = elements.configAutoLikeStatus.checked ? 'true' : 'false';
+        state.botConfig.AUTO_RECORDING = elements.configAutoRecording.checked ? 'true' : 'false';
+        state.botConfig.AUTO_LIKE_EMOJI = elements.configAutoLikeEmoji.value.split(',').map(e => e.trim());
+        state.botConfig.PREFIX = elements.configPrefix.value;
+        
+        // Save to localStorage
+        localStorage.setItem('silva_bot_config', JSON.stringify(state.botConfig));
+      },
+
+      // Toggle config visibility
+      toggleConfig() {
+        elements.configList.classList.toggle('expanded');
+        const icon = elements.configToggle.querySelector('i');
+        if (elements.configList.classList.contains('expanded')) {
+          icon.className = 'fas fa-chevron-up';
+        } else {
+          icon.className = 'fas fa-chevron-down';
+        }
+      },
+
+      // Toggle sessions visibility
+      toggleSessions() {
+        elements.sessionsList.classList.toggle('expanded');
+        const icon = elements.sessionsToggle.querySelector('i');
+        if (elements.sessionsList.classList.contains('expanded')) {
+          icon.className = 'fas fa-chevron-up';
+        } else {
+          icon.className = 'fas fa-chevron-down';
+        }
+      },
+
+      // Render active sessions
+      renderSessions(sessions) {
+        if (!sessions || sessions.length === 0) {
+          elements.sessionsList.innerHTML = '<div class="no-sessions">No active sessions. Connect your first bot above.</div>';
+          return;
+        }
+
+        elements.sessionsList.innerHTML = sessions.map(session => `
+          <div class="session-item">
+            <div class="session-details">
+              <div class="session-number">${session.number}</div>
+              <div class="session-status ${session.active ? 'session-active' : 'session-inactive'}">
+                ${session.active ? '🟢 ACTIVE' : '🔴 INACTIVE'}
+              </div>
+              <div class="session-date">Connected: ${this.formatDate(session.connectedAt)}</div>
+            </div>
+            <div class="session-actions">
+              <button class="session-btn" onclick="sessionManager.sendMessage('${session.number}')">
+                <i class="fas fa-comment"></i>
+              </button>
+              <button class="session-btn disconnect" onclick="sessionManager.disconnect('${session.number}')">
+                <i class="fas fa-power-off"></i>
+              </button>
+            </div>
+          </div>
+        `).join('');
+      },
+
+      // Format date for display
+      formatDate(dateString) {
+        const date = new Date(dateString);
+        return date.toLocaleDateString('en-US', {
+          year: 'numeric',
+          month: 'short',
+          day: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit'
+        });
+      },
+
+      // Show success message
+      showSuccess(message) {
+        this.showMessage(message, 'success', 'auth-message');
+        setTimeout(() => {
+          this.clearMessages();
+        }, 3000);
+      }
+    };
+
+    // Auth Management - Updated with Real Backend
+    const authManager = {
+      async login(username, password) {
+        try {
+          ui.setLoading(elements.loginBtn, true);
+          
+          const response = await fetch(`${API_BASE}/login`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ username, password })
+          });
+
+          const data = await response.json();
+
+          if (!response.ok) {
+            throw new Error(data.error || 'Login failed');
+          }
+
+          state.currentUser = data.user;
+          state.authToken = data.token;
+          
+          localStorage.setItem('silva_token', state.authToken);
+          localStorage.setItem('silva_user', JSON.stringify(state.currentUser));
+
+          this.showBotView();
+          ui.showMessage('Login successful!', 'success', 'auth-message');
+          
+        } catch (error) {
+          ui.showMessage(error.message, 'error', 'auth-message');
+        } finally {
+          ui.setLoading(elements.loginBtn, false);
+        }
+      },
+
+      async register(username, password, confirmPassword) {
+        try {
+          if (password !== confirmPassword) {
+            throw new Error('Passwords do not match');
+          }
+
+          if (password.length < 6) {
+            throw new Error('Password must be at least 6 characters');
+          }
+
+          ui.setLoading(elements.signupBtn, true);
+          
+          const response = await fetch(`${API_BASE}/register`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ username, password })
+          });
+
+          const data = await response.json();
+
+          if (!response.ok) {
+            throw new Error(data.error || 'Registration failed');
+          }
+          
+          state.currentUser = data.user;
+          state.authToken = data.token;
+          
+          localStorage.setItem('silva_token', state.authToken);
+          localStorage.setItem('silva_user', JSON.stringify(state.currentUser));
+
+          this.showBotView();
+          ui.showMessage('Account created successfully!', 'success', 'signup-message');
+          
+        } catch (error) {
+          ui.showMessage(error.message, 'error', 'signup-message');
+        } finally {
+          ui.setLoading(elements.signupBtn, false);
+        }
+      },
+
+      logout() {
+        state.currentUser = null;
+        state.authToken = null;
+        
+        localStorage.removeItem('silva_token');
+        localStorage.removeItem('silva_user');
+        
+        this.showAuthView();
+        ui.clearMessages();
+        
+        // Reset form fields
+        elements.loginUsername.value = '';
+        elements.loginPassword.value = '';
+        elements.signupUsername.value = '';
+        elements.signupPassword.value = '';
+        elements.signupConfirmPassword.value = '';
+      },
+
+      showAuthView() {
+        elements.authView.style.display = 'block';
+        elements.botView.style.display = 'none';
+      },
+
+      showBotView() {
+        elements.authView.style.display = 'none';
+        elements.botView.style.display = 'block';
+        
+        if (state.currentUser) {
+          elements.displayUsername.textContent = state.currentUser.username;
+          
+          // Load bot configuration
+          this.loadBotConfig();
+          
+          // Load active sessions
+          sessionManager.loadSessions();
+        }
+      },
+
+      loadBotConfig() {
+        // Load config from localStorage or use defaults
+        const savedConfig = localStorage.getItem('silva_bot_config');
+        if (savedConfig) {
+          state.botConfig = { ...state.botConfig, ...JSON.parse(savedConfig) };
+        }
+        
+        ui.loadConfigToForm();
+      },
+
+      async checkExistingAuth() {
+        const token = localStorage.getItem('silva_token');
+        const userStr = localStorage.getItem('silva_user');
+        
+        if (token && userStr) {
+          try {
+            // Verify token is still valid by making a profile request
+            const response = await fetch(`${API_BASE}/profile`, {
+              headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+              }
+            });
+
+            if (response.ok) {
+              state.authToken = token;
+              state.currentUser = JSON.parse(userStr);
+              this.showBotView();
+              return true;
+            } else {
+              // Token invalid, clear storage
+              this.logout();
+            }
+          } catch (error) {
+            // Token invalid, clear storage
+            this.logout();
+          }
+        }
+        return false;
+      }
+    };
+
+    // Session Management
+    const sessionManager = {
+      async loadSessions() {
+        // For demo purposes, we'll use localStorage
+        const sessions = JSON.parse(localStorage.getItem('silva_sessions') || '[]');
+        state.activeSessions = sessions;
+        ui.renderSessions(sessions);
+      },
+
+      async addSession(number) {
+        const session = {
+          number,
+          active: true,
+          connectedAt: new Date().toISOString()
+        };
+        
+        state.activeSessions.push(session);
+        localStorage.setItem('silva_sessions', JSON.stringify(state.activeSessions));
+        ui.renderSessions(state.activeSessions);
+      },
+
+      async disconnect(number) {
+        state.activeSessions = state.activeSessions.filter(s => s.number !== number);
+        localStorage.setItem('silva_sessions', JSON.stringify(state.activeSessions));
+        ui.renderSessions(state.activeSessions);
+        ui.showSuccess(`Disconnected session: ${number}`);
+      },
+
+      async sendMessage(number) {
+        // This would send a message via the bot
+        alert(`Message feature would be implemented to send message to ${number}`);
+      }
+    };
+
+    // Event Handlers
+    function setupEventListeners() {
+      // Auth tabs
+      elements.loginTab.addEventListener('click', () => {
+        elements.loginTab.classList.add('active');
+        elements.signupTab.classList.remove('active');
+        elements.loginForm.style.display = 'block';
+        elements.signupForm.style.display = 'none';
+        ui.clearMessages();
+      });
+
+      elements.signupTab.addEventListener('click', () => {
+        elements.signupTab.classList.add('active');
+        elements.loginTab.classList.remove('active');
+        elements.signupForm.style.display = 'block';
+        elements.loginForm.style.display = 'none';
+        ui.clearMessages();
+      });
+
+      // Auth buttons
+      elements.loginBtn.addEventListener('click', () => {
+        const username = elements.loginUsername.value.trim();
+        const password = elements.loginPassword.value;
+        
+        if (!username || !password) {
+          ui.showMessage('Please fill in all fields', 'error', 'auth-message');
+          return;
+        }
+        
+        authManager.login(username, password);
+      });
+
+      elements.signupBtn.addEventListener('click', () => {
+        const username = elements.signupUsername.value.trim();
+        const password = elements.signupPassword.value;
+        const confirmPassword = elements.signupConfirmPassword.value;
+        
+        if (!username || !password || !confirmPassword) {
+          ui.showMessage('Please fill in all fields', 'error', 'signup-message');
+          return;
+        }
+        
+        authManager.register(username, password, confirmPassword);
+      });
+
+      elements.logoutBtn.addEventListener('click', () => {
+        authManager.logout();
+      });
+
+      // Config buttons
+      elements.configHeader.addEventListener('click', () => {
+        ui.toggleConfig();
+      });
+
+      elements.sessionsHeader.addEventListener('click', () => {
+        ui.toggleSessions();
+      });
+
+      elements.saveConfigBtn.addEventListener('click', () => {
+        ui.saveConfigFromForm();
+        ui.showSuccess('Configuration saved successfully!');
+      });
+
+      // Enter key support
+      [elements.loginUsername, elements.loginPassword].forEach(input => {
+        input.addEventListener('keypress', (e) => {
+          if (e.key === 'Enter') elements.loginBtn.click();
+        });
+      });
+
+      [elements.signupUsername, elements.signupPassword, elements.signupConfirmPassword].forEach(input => {
+        input.addEventListener('keypress', (e) => {
+          if (e.key === 'Enter') elements.signupBtn.click();
+        });
+      });
+    }
+
+    // Visual Effects
+    const visualEffects = {
+      createParticles() {
+        const particlesContainer = document.getElementById('particles');
+        const particleCount = Math.min(30, Math.floor(window.innerWidth / 15)); // Adjust based on screen size
+        
+        for (let i = 0; i < particleCount; i++) {
+          const particle = document.createElement('div');
+          particle.classList.add('particle');
+          
+          const size = Math.random() * 8 + 2;
+          const colors = [
+            'rgba(0, 255, 65, 0.3)', 
+            'rgba(0, 243, 255, 0.3)', 
+            'rgba(255, 42, 109, 0.3)'
+          ];
+          
+          particle.style.width = `${size}px`;
+          particle.style.height = `${size}px`;
+          particle.style.background = colors[Math.floor(Math.random() * colors.length)];
+          particle.style.left = `${Math.random() * 100}%`;
+          particle.style.animationDuration = `${Math.random() * 20 + 10}s`;
+          particle.style.animationDelay = `${Math.random() * 5}s`;
+          
+          particlesContainer.appendChild(particle);
+        }
+      },
+      
+      createDataStream() {
+        const streamContainer = document.getElementById('data-stream');
+        const streamCount = Math.min(8, Math.floor(window.innerWidth / 100)); // Adjust based on screen size
+        
+        for (let i = 0; i < streamCount; i++) {
+          const stream = document.createElement('div');
+          stream.classList.add('stream');
+          
+          stream.style.left = `${(i / streamCount) * 100}%`;
+          stream.style.animationDelay = `${Math.random() * 5}s`;
+          stream.style.animationDuration = `${Math.random() * 10 + 10}s`;
+          
+          streamContainer.appendChild(stream);
+        }
+      },
+      
+      // Matrix Digital Rain Effect
+      initMatrixRain() {
+        const canvas = document.getElementById('matrixCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        // Set canvas to full screen
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        
+        // Characters - taken from the original Matrix
+        const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789$+-*/=%\"'#&_(),.;:?!\\|{}<>[]^~";
+        const charArray = chars.split("");
+        
+        const font_size = 14;
+        const columns = canvas.width / font_size;
+        
+        // Array of drops - one per column
+        const drops = [];
+        for (let x = 0; x < columns; x++) {
+          drops[x] = Math.floor(Math.random() * canvas.height / font_size);
+        }
+        
+        function draw() {
+          // Black BG for the canvas
+          // translucent BG to show trail
+          ctx.fillStyle = "rgba(0, 0, 0, 0.04)";
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
+          
+          ctx.font = font_size + "px monospace";
+          // Looping over drops
+          for (let i = 0; i < drops.length; i++) {
+            // Random character to print
+            const text = charArray[Math.floor(Math.random() * charArray.length)];
+            
+            // Varying shades of green
+            const greenShade = Math.floor(Math.random() * 155) + 100;
+            ctx.fillStyle = `rgb(0, ${greenShade}, 0)`;
+            
+            // x coordinate of the drop
+            const x = i * font_size;
+            // y coordinate of the drop
+            const y = drops[i] * font_size;
+            
+            ctx.fillText(text, x, y);
+            
+            // Sending the drop back to the top randomly after it has crossed the screen
+            // Adding randomness to the reset to make the drops scattered on the Y axis
+            if (y > canvas.height && Math.random() > 0.975) {
+              drops[i] = 0;
+            }
+            
+            // Incrementing Y coordinate
+            drops[i]++;
+          }
+        }
+        
+        setInterval(draw, 35);
+      }
+    };
+
+    // Initialize application
+    async function init() {
+      console.log(`🚀 ${CONFIG.APP_NAME} Control Panel Initializing...`);
+      
+      // Setup visual effects
+      visualEffects.createParticles();
+      visualEffects.createDataStream();
+      visualEffects.initMatrixRain();
+      
+      // Setup event listeners
+      setupEventListeners();
+      
+      // Check existing authentication
+      await authManager.checkExistingAuth();
+      
+      console.log(`🎉 ${CONFIG.APP_NAME} Control Panel Ready!`);
+    }
+
+    // Start the application
+    document.addEventListener('DOMContentLoaded', init);
+  </script>
+
+  <!-- Pairing Script -->
+  <script>
+    let a = document.getElementById("pair");
+    let b = document.getElementById("submit");
+    let c = document.getElementById("number");
+    let box = document.getElementById("box");
+    let waitingMessage = document.getElementById("waiting-message");
+
+    async function Copy() {
+      let text = document.getElementById("copy-value").innerText;
+      let codeDisplay = document.getElementById("code-display");
+      await navigator.clipboard.writeText(text);
+      
+      codeDisplay.innerHTML = '<i class="fas fa-check" style="color:#00ff41; margin-right:8px;"></i> COPIED!';
+      codeDisplay.style.background = 'rgba(0, 255, 65, 0.1)';
+      codeDisplay.style.border = '1px solid rgba(0, 255, 65, 0.3)';
+      
+      setTimeout(() => {
+        codeDisplay.innerHTML = `
+          <i class="fas fa-copy" style="color:var(--matrix-green);"></i>
+          <span class="code-text">CODE: </span>
+          <span class="code-value" id="copy-value">${text}</span>
+        `;
+        codeDisplay.style.background = 'rgba(0, 0, 0, 0.5)';
+        codeDisplay.style.border = '1px solid var(--glass-border)';
+      }, 2000);
+    }
+
+    b.addEventListener("click", async (e) => {
+      e.preventDefault();
+      
+      // Check if user is logged in
+      if (!state.currentUser) {
+        a.innerHTML = '<div style="color:var(--hacker-red);font-weight:500;background:rgba(255,42,109,0.1);padding:10px;border-radius:5px;border:1px solid rgba(255,42,109,0.3);font-size:14px"><i class="fas fa-exclamation-circle"></i> Please login first to deploy bot.</div>';
+        return;
+      }
+
+      if (!c.value) {
+        a.innerHTML = '<div style="color:var(--hacker-red);font-weight:500;background:rgba(255,42,109,0.1);padding:10px;border-radius:5px;border:1px solid rgba(255,42,109,0.3);font-size:14px"><i class="fas fa-exclamation-circle"></i> Enter your WhatsApp number with country code.</div>';
+      } else if (c.value.replace(/[^0-9]/g, "").length < 11) {
+        a.innerHTML = '<div style="color:var(--hacker-red);font-weight:500;background:rgba(255,42,109,0.1);padding:10px;border-radius:5px;border:1px solid rgba(255,42,109,0.3);font-size:14px"><i class="fas fa-times"></i> Invalid number format</div>';
+      } else {
+        const bc = c.value.replace(/[^0-9]/g, "");
+        let bb = "";
+        let bbc = "";
+        const cc = bc.split('');
+        cc.map(a => {
+          bbc += a;
+          if (bbc.length == 3) {
+            bb += " " + a;
+          } else if (bbc.length == 8) {
+            bb += " " + a;
+          } else {
+            bb += a;
+          }
+        });
+        c.type = "text";
+        c.value = "+" + bb;
+        c.style.color = "var(--matrix-green)";
+        waitingMessage.style.display = "block";
+        a.innerHTML = '';
+        
+        try {
+          // Use the correct /code endpoint for pairing
+          const response = await fetch(`${CONFIG.PAIRING_ENDPOINT}?number=${bc}`, {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json'
+            }
+          });
+          
+          // Check if response is JSON
+          const contentType = response.headers.get('content-type');
+          if (!contentType || !contentType.includes('application/json')) {
+            const text = await response.text();
+            throw new Error(`Server returned HTML instead of JSON. Status: ${response.status}`);
+          }
+          
+          const data = await response.json();
+          
+          if (!response.ok) {
+            throw new Error(data.error || `HTTP ${response.status}`);
+          }
+          
+          let code = data.code || "Service Unavailable";
+          waitingMessage.style.display = "none";
+          
+          a.innerHTML = `
+            <div class="code-display pulse" id="code-display" onclick="Copy()">
+              <i class="fas fa-copy" style="color:var(--matrix-green);"></i>
+              <span class="code-text">CODE:</span>
+              <span class="code-value" id="copy-value">${code}</span>
+            </div>
+          `;
+          
+          // Add session to the list
+          sessionManager.addSession(bc);
+          
+        } catch (error) {
+          waitingMessage.style.display = "none";
+          console.error('Pairing error:', error);
+          a.innerHTML = `
+            <div style="color:var(--hacker-red);font-weight:500;background:rgba(255,42,109,0.1);padding:10px;border-radius:5px;border:1px solid rgba(255,42,109,0.3);font-size:14px">
+              <i class="fas fa-exclamation-triangle"></i> Failed to get pairing code: ${error.message}
+              <br><small>Check if the server is running and the /code endpoint is accessible.</small>
+            </div>
+          `;
+        }
+      }
+    });
+  </script>
+</body>
+</html>
