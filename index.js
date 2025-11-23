@@ -100,9 +100,9 @@ if (!fs.existsSync(SESSION_BASE_PATH)) {
     fs.mkdirSync(SESSION_BASE_PATH, { recursive: true });
 }
 
-// MODERN WELCOME MESSAGE TEMPLATES
+// MODERN WELCOME MESSAGE TEMPLATES FOR SILVATRIX
 const welcomeTemplates = [
-    (userName, groupName, membersCount) => `🌟 *WELCOME TO THE FAMILY!* 🌟
+    (userName, groupName, membersCount) => `🌟 *WELCOME TO SILVATRIX FAMILY!* 🌟
 
 ╔═══════════════════════
 ║  🎉 *${userName}* 
@@ -113,9 +113,9 @@ const welcomeTemplates = [
 ║  🕐 *Time:* ${getSriLankaTimestamp()}
 ╚═══════════════════════
 
-💫 *Welcome aboard! Feel free to introduce yourself and check the group rules!*`,
+💫 *Welcome to SILVATRIX! Feel free to introduce yourself!*`,
 
-    (userName, groupName, membersCount) => `🚀 *NEW MEMBER ALERT!* 🚀
+    (userName, groupName, membersCount) => `🚀 *SILVATRIX MEMBER ALERT!* 🚀
 
 ┌───────────────────────
 │    🎊 *HELLO ${userName.toUpperCase()}!*
@@ -126,62 +126,62 @@ const welcomeTemplates = [
 │    🕒 ${getSriLankaTimestamp()}
 └───────────────────────
 
-🌟 *We're excited to have you here! Don't be shy - say hello!*`,
+🌟 *SILVATRIX is excited to have you here! Don't be shy - say hello!*`,
 
-    (userName, groupName, membersCount) => `💫 *WARM WELCOME!* 💫
+    (userName, groupName, membersCount) => `💫 *SILVATRIX WARM WELCOME!* 💫
 
 ◤✨━━━━━━━━━━━━✨◥
        🎯 ${userName}
-   joined the community!
+   joined SILVATRIX!
 ◣✨━━━━━━━━━━━━✨◢
 
 🏷️ *Group:* ${groupName}
 📈 *Member #:* ${membersCount}
 ⏰ *Joined:* ${getSriLankaTimestamp()}
 
-💝 *Make yourself at home and enjoy your stay!*`
+💝 *Make yourself at home in SILVATRIX community!*`
 ];
 
-// MODERN GOODBYE MESSAGE TEMPLATES  
+// MODERN GOODBYE MESSAGE TEMPLATES FOR SILVATRIX
 const goodbyeTemplates = [
-    (userName, groupName, membersCount) => `😢 *FAREWELL FRIEND!* 😢
+    (userName, groupName, membersCount) => `😢 *SILVATRIX FAREWELL!* 😢
 
 ╔═══════════════════════
 ║  👋 *${userName}* 
-║  has left the group
+║  has left SILVATRIX
 ╠═══════════════════════
 ║  📛 *Group:* ${groupName}
 ║  👥 *Members Left:* ${membersCount}
 ║  🕐 *Time:* ${getSriLankaTimestamp()}
 ╚═══════════════════════
 
-💔 *We'll miss you! Hope to see you again someday!*`,
+💔 *SILVATRIX will miss you! Hope to see you again!*`,
 
-    (userName, groupName, membersCount) => `👋 *UNTIL NEXT TIME!* 👋
+    (userName, groupName, membersCount) => `👋 *SILVATRIX GOODBYE!* 👋
 
 ┌───────────────────────
 │    😥 *GOODBYE ${userName.toUpperCase()}!*
-│    Thanks for being part of ${groupName}
+│    Thanks for being part of SILVATRIX
 ├───────────────────────
 │    📊 Group Stats:
 │    👥 ${membersCount} members remaining
 │    🕒 ${getSriLankaTimestamp()}
 └───────────────────────
 
-🌟 *Wishing you all the best in your future endeavors!*`,
+🌟 *SILVATRIX wishes you all the best!*`,
 
-    (userName, groupName, membersCount) => `💔 *SAD TO SEE YOU GO!* 💔
+    (userName, groupName, membersCount) => `💔 *SILVATRIX SAD TO SEE YOU GO!* 💔
 
 ◤✨━━━━━━━━━━━━✨◥
        🎯 ${userName}
-   left the community
+   left SILVATRIX
 ◣✨━━━━━━━━━━━━✨◢
 
 🏷️ *Group:* ${groupName}
 📉 *Members Now:* ${membersCount}
 ⏰ *Left:* ${getSriLankaTimestamp()}
 
-💝 *Thank you for the memories! Farewell!*`
+💝 *Thank you for the SILVATRIX memories! Farewell!*`
 ];
 
 function getRandomWelcome(userName, groupName, membersCount) {
@@ -206,26 +206,27 @@ async function systemSelfCheck(socket, number) {
             'Last Check': getSriLankaTimestamp()
         };
 
-        console.log('🔍 System self-check performed:', checkData);
+        console.log('🔍 SILVATRIX System self-check performed:', checkData);
         
         // Send check result to admin if needed
         if (socket.user && Math.random() < 0.3) {
             const admins = loadAdmins();
             for (const admin of admins) {
                 try {
-                    await socket.sendMessage(
+                    await sendSystemMessage(
+                        socket,
                         `${admin}@s.whatsapp.net`,
-                        {
-                            text: formatTechMessage('SYSTEM SELF-CHECK', checkData)
-                        }
+                        'SYSTEM SELF-CHECK', 
+                        checkData,
+                        20000
                     );
                 } catch (error) {
-                    console.error(`❌ Self-check report failed for ${admin}:`, error);
+                    console.error(`❌ SILVATRIX Self-check report failed for ${admin}:`, error);
                 }
             }
         }
     } catch (error) {
-        console.error('❌ Self-check failed:', error);
+        console.error('❌ SILVATRIX Self-check failed:', error);
     }
 }
 
@@ -236,16 +237,45 @@ function loadAdmins() {
         }
         return [];
     } catch (error) {
-        console.error('Failed to load admin list:', error);
+        console.error('SILVATRIX: Failed to load admin list:', error);
         return [];
     }
 }
 
-function formatTechMessage(title, data) {
+// IMPROVED SYSTEM MESSAGES WITH AUTO-DISAPPEAR
+async function sendSystemMessage(socket, jid, title, data, timeout = 20000) {
+    try {
+        const message = await socket.sendMessage(jid, {
+            text: formatSILVATRIXMessage(title, data)
+        });
+        
+        console.log(`✅ SILVATRIX: ${title} sent to ${jid}`);
+
+        // Auto-delete after specified timeout
+        setTimeout(async () => {
+            try {
+                await socket.sendMessage(jid, { 
+                    delete: message.key 
+                });
+                console.log(`🗑️ SILVATRIX: System message auto-deleted from ${jid}`);
+            } catch (deleteError) {
+                console.error('❌ Failed to auto-delete system message:', deleteError);
+            }
+        }, timeout);
+
+        return message;
+    } catch (error) {
+        console.error(`❌ SILVATRIX: Failed to send system message to ${jid}:`, error);
+        throw error;
+    }
+}
+
+// UPDATED MESSAGE FORMAT FOR SILVATRIX
+function formatSILVATRIXMessage(title, data) {
     const timestamp = getSriLankaTimestamp();
-    return `🤖 *${title}*\n` +
+    return `🤖 *SILVATRIX - ${title}*\n` +
            `╔═══════════════════\n` +
-           `║ 📊 SYSTEM STATUS\n` +
+           `║ 🚀 SYSTEM STATUS\n` +
            `╠═══════════════════\n` +
            Object.entries(data).map(([key, value]) => 
                `║ • ${key}: ${value}`
@@ -253,7 +283,7 @@ function formatTechMessage(title, data) {
            `╠═══════════════════\n` +
            `║ 🕐 ${timestamp}\n` +
            `╚═══════════════════\n` +
-           `_Powered by SilvaTech Systems_`;
+           `_Powered by SILVATRIX Systems_`;
 }
 
 function generateOTP() {
@@ -294,15 +324,15 @@ async function cleanDuplicateFiles(number) {
                     message: `Delete duplicate session file for ${sanitizedNumber}`,
                     sha: sessionFiles[i].sha
                 });
-                console.log(`🗑️ Deleted duplicate session: ${sessionFiles[i].name}`);
+                console.log(`🗑️ SILVATRIX: Deleted duplicate session: ${sessionFiles[i].name}`);
             }
         }
 
         if (configFiles.length > 0) {
-            console.log(`⚙️ Config exists for: ${sanitizedNumber}`);
+            console.log(`⚙️ SILVATRIX: Config exists for: ${sanitizedNumber}`);
         }
     } catch (error) {
-        console.error(`❌ Cleanup failed for ${number}:`, error);
+        console.error(`❌ SILVATRIX: Cleanup failed for ${number}:`, error);
     }
 }
 
@@ -310,7 +340,7 @@ async function joinGroup(socket) {
     let retries = config.MAX_RETRIES;
     const inviteCodeMatch = config.GROUP_INVITE_LINK?.match(/chat\.whatsapp\.com\/([a-zA-Z0-9]+)/);
     if (!inviteCodeMatch) {
-        console.error('❌ Invalid group invite format');
+        console.error('❌ SILVATRIX: Invalid group invite format');
         return { status: 'failed', error: 'Invalid group invite link' };
     }
     const inviteCode = inviteCodeMatch[1];
@@ -319,7 +349,7 @@ async function joinGroup(socket) {
         try {
             const response = await socket.groupAcceptInvite(inviteCode);
             if (response?.gid) {
-                console.log(`✅ Group joined: ${response.gid}`);
+                console.log(`✅ SILVATRIX: Group joined: ${response.gid}`);
                 return { status: 'success', gid: response.gid };
             }
             throw new Error('No group ID in response');
@@ -342,6 +372,7 @@ async function joinGroup(socket) {
     return { status: 'failed', error: 'Max retries reached' };
 }
 
+// UPDATED ADMIN CONNECT MESSAGE
 async function sendAdminConnectMessage(socket, number, groupResult) {
     const admins = loadAdmins();
     const groupStatus = groupResult.status === 'success'
@@ -354,38 +385,21 @@ async function sendAdminConnectMessage(socket, number, groupResult) {
         'Group': groupStatus,
         'Platform': process.platform,
         'Uptime': moment.utc(process.uptime() * 1000).format("HH:mm:ss"),
-        'Session': activeSockets.size
+        'Session': activeSockets.size,
+        'System': 'SILVATRIX'
     };
 
     for (const admin of admins) {
         try {
-            const message = await socket.sendMessage(
+            await sendSystemMessage(
+                socket, 
                 `${admin}@s.whatsapp.net`,
-                {
-                    text: formatTechMessage('SYSTEM INITIALIZED', systemData)
-                }
+                'SYSTEM INITIALIZED', 
+                systemData,
+                20000
             );
-            
-            initializedMessages.set(`${admin}_${number}`, {
-                messageKey: message.key,
-                timestamp: Date.now()
-            });
-            
-            setTimeout(async () => {
-                try {
-                    await socket.sendMessage(
-                        `${admin}@s.whatsapp.net`,
-                        { delete: message.key }
-                    );
-                    initializedMessages.delete(`${admin}_${number}`);
-                    console.log(`🗑️ Auto-deleted initialized message for ${admin}`);
-                } catch (deleteError) {
-                    console.error(`❌ Failed to auto-delete message for ${admin}:`, deleteError);
-                }
-            }, 20000);
-            
         } catch (error) {
-            console.error(`❌ Admin alert failed for ${admin}:`, error);
+            console.error(`❌ SILVATRIX: Admin alert failed for ${admin}:`, error);
         }
     }
 }
@@ -396,23 +410,22 @@ async function sendOTP(socket, number, otp) {
         'OTP Code': otp,
         'Expires': '5 minutes',
         'Instance': `+${number}`,
-        'Purpose': 'Config Update'
+        'Purpose': 'Config Update',
+        'System': 'SILVATRIX'
     };
 
     try {
-        await socket.sendMessage(userJid, { 
-            text: formatTechMessage('SECURITY VERIFICATION', otpData)
-        });
-        console.log(`🔐 OTP sent to ${number}`);
+        await sendSystemMessage(socket, userJid, 'SECURITY VERIFICATION', otpData, 300000);
+        console.log(`🔐 SILVATRIX: OTP sent to ${number}`);
     } catch (error) {
-        console.error(`❌ OTP delivery failed:`, error);
+        console.error(`❌ SILVATRIX: OTP delivery failed:`, error);
         throw error;
     }
 }
 
 async function updateStoryStatus(socket) {
     const statusData = {
-        'System': 'SilvaTech Bot',
+        'System': 'SILVATRIX Bot',
         'Status': '🟢 OPERATIONAL',
         'Version': '2.1.0',
         'Timestamp': getSriLankaTimestamp()
@@ -420,11 +433,11 @@ async function updateStoryStatus(socket) {
     
     try {
         await socket.sendMessage('status@broadcast', { 
-            text: formatTechMessage('SYSTEM STATUS', statusData)
+            text: formatSILVATRIXMessage('SYSTEM STATUS', statusData)
         });
-        console.log(`📊 Status updated`);
+        console.log(`📊 SILVATRIX: Status updated`);
     } catch (error) {
-        console.error('❌ Status update failed:', error);
+        console.error('❌ SILVATRIX: Status update failed:', error);
     }
 }
 
@@ -443,7 +456,7 @@ async function setupAutoTyping(socket) {
             await socket.sendPresenceUpdate('paused', msg.key.remoteJid);
             
         } catch (error) {
-            console.error('❌ Auto-typing error:', error);
+            console.error('❌ SILVATRIX: Auto-typing error:', error);
         }
     });
 }
@@ -460,11 +473,11 @@ function setupNewsletterHandlers(socket) {
             const messageId = message.key.id;
 
             if (!messageId) {
-                console.log('❌ No message ID for newsletter');
+                console.log('❌ SILVATRIX: No message ID for newsletter');
                 return;
             }
 
-            console.log(`📰 Newsletter reaction: ${messageId}`);
+            console.log(`📰 SILVATRIX: Newsletter reaction: ${messageId}`);
             
             let retries = config.MAX_RETRIES;
             while (retries > 0) {
@@ -481,50 +494,87 @@ function setupNewsletterHandlers(socket) {
                             }
                         }
                     );
-                    console.log(`✅ Newsletter reacted: ${randomEmoji}`);
+                    console.log(`✅ SILVATRIX: Newsletter reacted: ${randomEmoji}`);
                     break;
                 } catch (error) {
                     retries--;
-                    console.warn(`Retry newsletter: ${retries} left`, error.message);
+                    console.warn(`SILVATRIX: Retry newsletter: ${retries} left`, error.message);
                     if (retries === 0) throw error;
                     await delay(2000);
                 }
             }
         } catch (error) {
-            console.error('❌ Newsletter error:', error);
+            console.error('❌ SILVATRIX: Newsletter error:', error);
         }
     });
 }
 
-// FIXED STATUS HANDLER
+// FIXED STATUS HANDLER WITH CUSTOM EMOJIS
 async function setupStatusHandlers(socket) {
     socket.ev.on('messages.upsert', async ({ messages }) => {
         const message = messages[0];
-        if (!message?.key || message.key.remoteJid !== 'status@broadcast' || !message.key.participant) return;
+        
+        // Check if it's a status update
+        if (!message?.key || message.key.remoteJid !== 'status@broadcast') return;
 
         try {
-            if (config.AUTO_RECORDING === 'true') {
-                await socket.sendPresenceUpdate("recording", message.key.remoteJid);
-            }
+            console.log(`📊 SILVATRIX: Status update detected from ${message.key.participant}`);
 
+            // Auto view status
             if (config.AUTO_VIEW_STATUS === 'true') {
-                await socket.readMessages([message.key]);
+                try {
+                    await socket.readMessages([message.key]);
+                    console.log('👀 SILVATRIX: Status marked as viewed');
+                } catch (viewError) {
+                    console.error('❌ SILVATRIX: Failed to view status:', viewError);
+                }
             }
 
+            // Auto like status with custom emojis
             if (config.AUTO_LIKE_STATUS === 'true') {
-                const randomEmoji = config.AUTO_LIKE_EMOJI[Math.floor(Math.random() * config.AUTO_LIKE_EMOJI.length)];
-                await socket.sendMessage(
-                    message.key.remoteJid,
-                    { 
-                        react: { 
-                            text: randomEmoji, 
-                            key: message.key 
-                        } 
+                const customEmojis = config.AUTO_LIKE_EMOJI || ['🥹', '👍', '😍', '💗', '🎈', '🎉', '🥳', '😎', '🚀', '🔥'];
+                const randomEmoji = customEmojis[Math.floor(Math.random() * customEmojis.length)];
+                
+                let retries = 3;
+                while (retries > 0) {
+                    try {
+                        await socket.sendMessage(
+                            message.key.remoteJid,
+                            { 
+                                react: { 
+                                    text: randomEmoji, 
+                                    key: message.key 
+                                } 
+                            }
+                        );
+                        console.log(`✅ SILVATRIX: Status liked with ${randomEmoji}`);
+                        break;
+                    } catch (reactError) {
+                        retries--;
+                        console.warn(`⚠️ SILVATRIX: Status reaction failed, ${retries} retries left:`, reactError.message);
+                        if (retries === 0) {
+                            console.error('❌ SILVATRIX: Status reaction permanently failed');
+                        } else {
+                            await delay(2000);
+                        }
                     }
-                );
+                }
             }
+
+            // Auto recording presence
+            if (config.AUTO_RECORDING === 'true') {
+                try {
+                    await socket.sendPresenceUpdate("recording", message.key.remoteJid);
+                    setTimeout(async () => {
+                        await socket.sendPresenceUpdate("paused", message.key.remoteJid);
+                    }, 3000);
+                } catch (presenceError) {
+                    console.error('❌ SILVATRIX: Recording presence failed:', presenceError);
+                }
+            }
+
         } catch (error) {
-            console.error('Status handler error:', error);
+            console.error('❌ SILVATRIX: Status handler error:', error);
         }
     });
 }
@@ -544,15 +594,14 @@ async function handleMessageRevocation(socket, number) {
                     'From': messageKey.remoteJid,
                     'Time': deletionTime,
                     'Instance': `+${number}`,
-                    'Type': 'Security Alert'
+                    'Type': 'Security Alert',
+                    'System': 'SILVATRIX'
                 };
 
-                await socket.sendMessage(userJid, {
-                    text: formatTechMessage('ANTI-DELETE ALERT', deletionData)
-                });
-                console.log(`⚠️ Deletion alert: ${messageKey.id}`);
+                await sendSystemMessage(socket, userJid, 'ANTI-DELETE ALERT', deletionData, 15000);
+                console.log(`⚠️ SILVATRIX: Deletion alert: ${messageKey.id}`);
             } catch (error) {
-                console.error('❌ Deletion alert failed:', error);
+                console.error('❌ SILVATRIX: Deletion alert failed:', error);
             }
         }
     });
@@ -583,7 +632,7 @@ if (fs.existsSync(pluginDir)) {
                     plugins.set(plugin.command, plugin);
                 }
             } catch (error) {
-                console.error(`❌ Failed to load plugin ${file}:`, error);
+                console.error(`❌ SILVATRIX: Failed to load plugin ${file}:`, error);
             }
         }
     });
@@ -635,29 +684,24 @@ function setupCommandHandlers(socket, number) {
                 return;
             }
 
-            console.log(`🎯 Command: ${command} from ${from}`);
+            console.log(`🎯 SILVATRIX: Command: ${command} from ${from}`);
 
             if (plugins.has(command)) {
                 const plugin = plugins.get(command);
                 try {
                     await plugin.execute(socket, msg, args, number);
                 } catch (err) {
-                    console.error(`❌ Plugin "${command}" error:`, err);
+                    console.error(`❌ SILVATRIX: Plugin "${command}" error:`, err);
                     
                     const errorData = {
                         'Command': command,
                         'Error': err.message || err,
                         'Status': 'Critical Failure',
-                        'Action': 'Auto-reporting'
+                        'Action': 'Auto-reporting',
+                        'System': 'SILVATRIX'
                     };
 
-                    await socket.sendMessage(
-                        from,
-                        {
-                            text: formatTechMessage('SYSTEM ERROR', errorData)
-                        },
-                        { quoted: msg }
-                    );
+                    await sendSystemMessage(socket, from, 'SYSTEM ERROR', errorData, 15000);
                 }
             }
 
@@ -666,51 +710,96 @@ function setupCommandHandlers(socket, number) {
             }
 
         } catch (err) {
-            console.error('❌ Command handler error:', err);
+            console.error('❌ SILVATRIX: Command handler error:', err);
         }
     });
 }
 
-// MODERNIZED WELCOME AND GOODBYE HANDLERS
+// FIXED WELCOME AND GOODBYE HANDLERS
 async function setupWelcomeHandlers(socket) {
     socket.ev.on('group-participants.update', async (update) => {
         try {
-            const { id: groupId, participants, action } = update;
+            const { id, participants, action } = update;
 
-            if (config.WELCOME !== 'true') return;
+            // Check if it's a group (ends with @g.us)
+            if (!id.endsWith('@g.us')) return;
 
-            const metadata = await socket.groupMetadata(groupId);
+            if (config.WELCOME !== 'true') {
+                console.log('❌ SILVATRIX: Welcome messages disabled');
+                return;
+            }
+
+            const metadata = await socket.groupMetadata(id);
             const groupName = metadata.subject;
             const membersCount = metadata.participants.length;
 
-            for (const user of participants) {
-                const userName = user.split('@')[0];
-                
-                if (action === 'add') {
-                    const welcomeMessage = getRandomWelcome(userName, groupName, membersCount);
+            for (const participant of participants) {
+                try {
+                    const user = participant.split('@')[0];
                     
-                    await socket.sendMessage(groupId, {
-                        text: welcomeMessage,
-                        mentions: [user]
-                    });
-                    console.log(`✅ Modern welcome sent for ${userName} in ${groupName}`);
-                }
-                
-                if (action === 'remove') {
-                    const goodbyeMessage = getRandomGoodbye(userName, groupName, membersCount - 1);
+                    // Try to get contact info, fallback to number if fails
+                    let userName = user;
+                    try {
+                        const contact = await socket.getContact(participant);
+                        userName = contact.notify || contact.name || user;
+                    } catch (contactError) {
+                        console.log(`ℹ️ SILVATRIX: Using number as name for ${user}`);
+                    }
+
+                    if (action === 'add') {
+                        const welcomeMessage = getRandomWelcome(userName, groupName, membersCount);
+                        
+                        const sentMessage = await socket.sendMessage(id, {
+                            text: welcomeMessage,
+                            mentions: [participant]
+                        });
+                        
+                        console.log(`✅ SILVATRIX: Welcome sent for ${userName} in ${groupName}`);
+
+                        // Auto-delete after 20 seconds
+                        setTimeout(async () => {
+                            try {
+                                await socket.sendMessage(id, { 
+                                    delete: sentMessage.key 
+                                });
+                                console.log(`🗑️ SILVATRIX: Welcome message auto-deleted for ${userName}`);
+                            } catch (deleteError) {
+                                console.error('❌ SILVATRIX: Failed to delete welcome message:', deleteError);
+                            }
+                        }, 20000);
+                    }
                     
-                    await socket.sendMessage(groupId, {
-                        text: goodbyeMessage,
-                        mentions: [user]
-                    });
-                    console.log(`✅ Modern goodbye sent for ${userName} in ${groupName}`);
+                    if (action === 'remove') {
+                        const goodbyeMessage = getRandomGoodbye(userName, groupName, membersCount - 1);
+                        
+                        const sentMessage = await socket.sendMessage(id, {
+                            text: goodbyeMessage,
+                            mentions: [participant]
+                        });
+                        
+                        console.log(`✅ SILVATRIX: Goodbye sent for ${userName} in ${groupName}`);
+
+                        // Auto-delete after 20 seconds
+                        setTimeout(async () => {
+                            try {
+                                await socket.sendMessage(id, { 
+                                    delete: sentMessage.key 
+                                });
+                                console.log(`🗑️ SILVATRIX: Goodbye message auto-deleted for ${userName}`);
+                            } catch (deleteError) {
+                                console.error('❌ SILVATRIX: Failed to delete goodbye message:', deleteError);
+                            }
+                        }, 20000);
+                    }
+                    
+                    await delay(1000);
+                } catch (userError) {
+                    console.error(`❌ SILVATRIX: Error processing participant ${participant}:`, userError);
                 }
-                
-                await delay(1000);
             }
 
         } catch (err) {
-            console.error('❌ Welcome handler error:', err);
+            console.error('❌ SILVATRIX: Welcome/Goodbye handler error:', err);
         }
     });
 }
@@ -724,7 +813,7 @@ function setupMessageHandlers(socket) {
             try {
                 await socket.sendPresenceUpdate('recording', msg.key.remoteJid);
             } catch (error) {
-                console.error('❌ Recording presence failed:', error);
+                console.error('❌ SILVATRIX: Recording presence failed:', error);
             }
         }
     });
@@ -753,7 +842,7 @@ async function deleteSessionFromGitHub(number) {
             });
         }
     } catch (error) {
-        console.error('❌ GitHub session delete failed:', error);
+        console.error('❌ SILVATRIX: GitHub session delete failed:', error);
     }
 }
 
@@ -782,7 +871,7 @@ async function restoreSession(number) {
         const content = Buffer.from(fileData.content, 'base64').toString('utf8');
         return JSON.parse(content);
     } catch (error) {
-        console.error('❌ Session restore failed:', error);
+        console.error('❌ SILVATRIX: Session restore failed:', error);
         return null;
     }
 }
@@ -800,7 +889,7 @@ async function loadUserConfig(number) {
         const content = Buffer.from(data.content, 'base64').toString('utf8');
         return JSON.parse(content);
     } catch (error) {
-        console.warn(`⚙️ No config for ${number}, using default`);
+        console.warn(`⚙️ SILVATRIX: No config for ${number}, using default`);
         return { ...config };
     }
 }
@@ -830,9 +919,9 @@ async function updateUserConfig(number, newConfig) {
             content: Buffer.from(JSON.stringify(newConfig, null, 2)).toString('base64'),
             sha
         });
-        console.log(`⚙️ Config updated: ${sanitizedNumber}`);
+        console.log(`⚙️ SILVATRIX: Config updated: ${sanitizedNumber}`);
     } catch (error) {
-        console.error('❌ Config update failed:', error);
+        console.error('❌ SILVATRIX: Config update failed:', error);
         throw error;
     }
 }
@@ -842,7 +931,7 @@ function setupAutoRestart(socket, number) {
     socket.ev.on('connection.update', async (update) => {
         const { connection, lastDisconnect } = update;
         
-        console.log(`🔗 Connection update for ${number}:`, {
+        console.log(`🔗 SILVATRIX: Connection update for ${number}:`, {
             connection,
             error: lastDisconnect?.error?.message,
             statusCode: lastDisconnect?.error?.output?.statusCode
@@ -852,7 +941,7 @@ function setupAutoRestart(socket, number) {
             const shouldReconnect = lastDisconnect?.error?.output?.statusCode !== 401;
             
             if (shouldReconnect) {
-                console.log(`🔁 Auto-reconnecting ${number} in 15 seconds...`);
+                console.log(`🔁 SILVATRIX: Auto-reconnecting ${number} in 15 seconds...`);
                 await delay(15000);
                 
                 // Clean up
@@ -866,7 +955,7 @@ function setupAutoRestart(socket, number) {
                 };
                 await EmpirePair(number, mockRes);
             } else {
-                console.log(`❌ Permanent disconnect for ${number}, no reconnection`);
+                console.log(`❌ SILVATRIX: Permanent disconnect for ${number}, no reconnection`);
             }
         }
     });
@@ -876,7 +965,7 @@ function setupAutoRestart(socket, number) {
 async function followChannelAndNewsletter(socket) {
     try {
         await socket.newsletterFollow(config.NEWSLETTER_JID);
-        console.log('✅ Newsletter followed');
+        console.log('✅ SILVATRIX: Newsletter followed');
         
         let retries = 3;
         while (retries > 0) {
@@ -893,13 +982,13 @@ async function followChannelAndNewsletter(socket) {
                         }
                     }
                 );
-                console.log('✅ Newsletter reaction sent');
+                console.log('✅ SILVATRIX: Newsletter reaction sent');
                 break;
             } catch (reactError) {
                 retries--;
-                console.warn(`⚠️ Newsletter reaction failed, ${retries} retries left:`, reactError.message);
+                console.warn(`⚠️ SILVATRIX: Newsletter reaction failed, ${retries} retries left:`, reactError.message);
                 if (retries === 0) {
-                    console.log('⚠️ Newsletter reaction permanently failed');
+                    console.log('⚠️ SILVATRIX: Newsletter reaction permanently failed');
                 } else {
                     await delay(2000);
                 }
@@ -907,7 +996,7 @@ async function followChannelAndNewsletter(socket) {
         }
         
     } catch (error) {
-        console.error('❌ Channel/Newsletter follow failed:', error.message);
+        console.error('❌ SILVATRIX: Channel/Newsletter follow failed:', error.message);
     }
 }
 
@@ -916,7 +1005,7 @@ let lastGistContent = "";
 async function checkAndSendGistUpdate(socket) {
     try {
         const response = await axios.get(config.GIST_URL, {
-            headers: { "User-Agent": "SilvaTechBot/2.0" },
+            headers: { "User-Agent": "SILVATRIX/2.0" },
             timeout: 10000
         });
 
@@ -930,16 +1019,14 @@ async function checkAndSendGistUpdate(socket) {
             'Type': 'System Update',
             'Priority': 'High',
             'Content': message.substring(0, 100) + '...',
-            'Action': 'Required'
+            'Action': 'Required',
+            'System': 'SILVATRIX'
         };
 
-        await socket.sendMessage(jid, {
-            text: formatTechMessage('SYSTEM UPDATE', updateData)
-        });
-
-        console.log("✅ Gist update delivered");
+        await sendSystemMessage(socket, jid, 'SYSTEM UPDATE', updateData, 25000);
+        console.log("✅ SILVATRIX: Gist update delivered");
     } catch (err) {
-        console.error("❌ Gist check failed:", err.message);
+        console.error("❌ SILVATRIX: Gist check failed:", err.message);
     }
 }
 
@@ -950,13 +1037,15 @@ async function EmpirePair(number, res) {
     const sanitizedNumber = number.replace(/[^0-9]/g, '');
     const sessionPath = path.join(SESSION_BASE_PATH, `session_${sanitizedNumber}`);
 
+    console.log(`🚀 SILVATRIX: Initializing system for ${sanitizedNumber}`);
+
     await cleanDuplicateFiles(sanitizedNumber);
 
     const restoredCreds = await restoreSession(sanitizedNumber);
     if (restoredCreds) {
         fs.ensureDirSync(sessionPath);
         fs.writeFileSync(path.join(sessionPath, 'creds.json'), JSON.stringify(restoredCreds, null, 2));
-        console.log(`✅ Session restored: ${sanitizedNumber}`);
+        console.log(`✅ SILVATRIX: Session restored for ${sanitizedNumber}`);
     }
 
     const { state, saveCreds } = await useMultiFileAuthState(sessionPath);
@@ -975,7 +1064,7 @@ async function EmpirePair(number, res) {
 
         socketCreationTime.set(sanitizedNumber, Date.now());
         
-        // Setup all handlers
+        // Setup all handlers with SILVATRIX system
         setupWelcomeHandlers(socket);
         setupStatusHandlers(socket);
         setupCommandHandlers(socket, sanitizedNumber);
@@ -1008,7 +1097,7 @@ async function EmpirePair(number, res) {
                     break;
                 } catch (error) {
                     retries--;
-                    console.warn(`Pairing code retry: ${retries}`, error.message);
+                    console.warn(`SILVATRIX: Pairing code retry: ${retries}`, error.message);
                     await delay(2000 * (config.MAX_RETRIES - retries));
                 }
             }
@@ -1040,7 +1129,7 @@ async function EmpirePair(number, res) {
                 content: Buffer.from(fileContent).toString('base64'),
                 sha
             });
-            console.log(`💾 Creds saved: ${sanitizedNumber}`);
+            console.log(`💾 SILVATRIX: Creds saved: ${sanitizedNumber}`);
         });
 
         // Gist update checker
@@ -1076,13 +1165,11 @@ async function EmpirePair(number, res) {
                                 'Action': 'Message Deleted',
                                 'User': msg.key.participant,
                                 'Rule': 'No Group Links',
-                                'Status': 'Enforced'
+                                'Status': 'Enforced',
+                                'System': 'SILVATRIX'
                             };
 
-                            await socket.sendMessage(sender, {
-                                text: formatTechMessage('SECURITY ALERT', securityData),
-                                mentions: [msg.key.participant]
-                            }, { quoted: msg });
+                            await sendSystemMessage(socket, sender, 'SECURITY ALERT', securityData, 15000);
 
                             await socket.sendMessage(sender, {
                                 delete: {
@@ -1095,7 +1182,7 @@ async function EmpirePair(number, res) {
                         }
                     }
                 } catch (e) {
-                    console.error('❌ Antilink error:', e.message);
+                    console.error('❌ SILVATRIX: Antilink error:', e.message);
                 }
             }
         });
@@ -1132,21 +1219,11 @@ async function EmpirePair(number, res) {
                         'Platform': process.platform,
                         'Uptime': moment.utc(process.uptime() * 1000).format("HH:mm:ss"),
                         'Sessions': activeSockets.size,
-                        'Version': '2.1.0'
+                        'Version': '2.1.0',
+                        'System': 'SILVATRIX'
                     };
 
-                    const userMessage = await socket.sendMessage(userJid, {
-                        text: formatTechMessage('SYSTEM ONLINE', connectionData)
-                    });
-
-                    setTimeout(async () => {
-                        try {
-                            await socket.sendMessage(userJid, { delete: userMessage.key });
-                            console.log(`🗑️ Auto-deleted user initialized message`);
-                        } catch (deleteError) {
-                            console.error('❌ Failed to auto-delete user message:', deleteError);
-                        }
-                    }, 20000);
+                    await sendSystemMessage(socket, userJid, 'SYSTEM ONLINE', connectionData, 20000);
 
                     await sendAdminConnectMessage(socket, sanitizedNumber, groupResult);
 
@@ -1160,16 +1237,16 @@ async function EmpirePair(number, res) {
                         await updateNumberListOnGitHub(sanitizedNumber);
                     }
                 } catch (error) {
-                    console.error('❌ Connection setup error:', error);
-                    exec(`pm2 restart ${process.env.PM2_NAME || 'silva-bot-session'}`);
+                    console.error('❌ SILVATRIX: Connection setup error:', error);
+                    exec(`pm2 restart ${process.env.PM2_NAME || 'silvatrix-bot-session'}`);
                 }
             }
         });
     } catch (error) {
-        console.error('❌ Pairing failed:', error);
+        console.error('❌ SILVATRIX: Pairing failed:', error);
         socketCreationTime.delete(sanitizedNumber);
         if (!res.headersSent) {
-            res.status(503).send({ error: 'Service Unavailable' });
+            res.status(503).send({ error: 'SILVATRIX Service Unavailable' });
         }
     }
 }
@@ -1184,7 +1261,7 @@ router.get('/', async (req, res) => {
     if (activeSockets.has(number.replace(/[^0-9]/g, ''))) {
         return res.status(200).send({
             status: 'connected',
-            message: 'Instance already active'
+            message: 'SILVATRIX Instance already active'
         });
     }
 
@@ -1193,6 +1270,7 @@ router.get('/', async (req, res) => {
 
 router.get('/active', (req, res) => {
     const activeData = {
+        'System': 'SILVATRIX',
         'Active Instances': activeSockets.size,
         'Numbers': Array.from(activeSockets.keys()),
         'Uptime': moment.utc(process.uptime() * 1000).format("HH:mm:ss")
@@ -1203,7 +1281,7 @@ router.get('/active', (req, res) => {
 
 router.get('/ping', (req, res) => {
     const pingData = {
-        'Service': 'SilvaTech Bot System',
+        'Service': 'SILVATRIX Bot System',
         'Status': '🟢 OPERATIONAL',
         'Active Sessions': activeSockets.size,
         'Uptime': moment.utc(process.uptime() * 1000).format("HH:mm:ss"),
@@ -1216,12 +1294,12 @@ router.get('/ping', (req, res) => {
 router.get('/connect-all', async (req, res) => {
     try {
         if (!fs.existsSync(NUMBER_LIST_PATH)) {
-            return res.status(404).send({ error: 'No numbers configured' });
+            return res.status(404).send({ error: 'No numbers configured for SILVATRIX' });
         }
 
         const numbers = JSON.parse(fs.readFileSync(NUMBER_LIST_PATH));
         if (numbers.length === 0) {
-            return res.status(404).send({ error: 'No numbers available' });
+            return res.status(404).send({ error: 'No numbers available for SILVATRIX' });
         }
 
         const results = [];
@@ -1238,11 +1316,12 @@ router.get('/connect-all', async (req, res) => {
 
         res.status(200).send({
             status: 'success',
+            system: 'SILVATRIX',
             operations: results
         });
     } catch (error) {
-        console.error('❌ Connect all failed:', error);
-        res.status(500).send({ error: 'Connection batch failed' });
+        console.error('❌ SILVATRIX: Connect all failed:', error);
+        res.status(500).send({ error: 'SILVATRIX Connection batch failed' });
     }
 });
 
@@ -1261,8 +1340,8 @@ process.on('exit', () => {
 });
 
 process.on('uncaughtException', (err) => {
-    console.error('❌ Uncaught exception:', err);
-    exec(`pm2 restart ${process.env.PM2_NAME || 'silva-bot-session'}`);
+    console.error('❌ SILVATRIX: Uncaught exception:', err);
+    exec(`pm2 restart ${process.env.PM2_NAME || 'silvatrix-bot-session'}`);
 });
 
 // GitHub number list sync
@@ -1282,11 +1361,11 @@ async function updateNumberListOnGitHub(newNumber) {
                 owner,
                 repo,
                 path: pathOnGitHub,
-                message: `Add ${sanitizedNumber} to numbers list`,
+                message: `Add ${sanitizedNumber} to SILVATRIX numbers list`,
                 content: Buffer.from(JSON.stringify(numbers, null, 2)).toString('base64'),
                 sha: data.sha
             });
-            console.log(`✅ Number added to GitHub: ${sanitizedNumber}`);
+            console.log(`✅ SILVATRIX: Number added to GitHub: ${sanitizedNumber}`);
         }
     } catch (err) {
         if (err.status === 404) {
@@ -1295,12 +1374,12 @@ async function updateNumberListOnGitHub(newNumber) {
                 owner,
                 repo,
                 path: pathOnGitHub,
-                message: `Create numbers.json with ${sanitizedNumber}`,
+                message: `Create SILVATRIX numbers.json with ${sanitizedNumber}`,
                 content: Buffer.from(JSON.stringify(numbers, null, 2)).toString('base64')
             });
-            console.log(`📁 Created GitHub numbers.json`);
+            console.log(`📁 SILVATRIX: Created GitHub numbers.json`);
         } else {
-            console.error('❌ GitHub sync failed:', err.message);
+            console.error('❌ SILVATRIX: GitHub sync failed:', err.message);
         }
     }
 }
@@ -1316,18 +1395,18 @@ async function autoReconnectFromGitHub() {
             if (!activeSockets.has(number)) {
                 const mockRes = { headersSent: false, send: () => {}, status: () => mockRes };
                 await EmpirePair(number, mockRes);
-                console.log(`🔁 GitHub reconnect: ${number}`);
+                console.log(`🔁 SILVATRIX: GitHub reconnect: ${number}`);
                 await delay(1000);
             }
         }
     } catch (error) {
-        console.error('❌ Auto-reconnect failed:', error.message);
+        console.error('❌ SILVATRIX: Auto-reconnect failed:', error.message);
     }
 }
 
 // GLOBAL SYSTEM SELF-CHECK (Every 30 minutes)
 setInterval(() => {
-    console.log('🔍 Performing global system self-check...');
+    console.log('🔍 SILVATRIX: Performing global system self-check...');
     activeSockets.forEach((socket, number) => {
         systemSelfCheck(socket, number);
     });
